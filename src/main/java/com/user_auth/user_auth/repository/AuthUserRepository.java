@@ -1,4 +1,4 @@
-package com.user_auth.user_auth.repositorie;
+package com.user_auth.user_auth.repository;
 
 import com.user_auth.user_auth.model.AuthUser;
 import org.springframework.data.jpa.repository.JpaRepository;

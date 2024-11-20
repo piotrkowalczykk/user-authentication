@@ -4,6 +4,7 @@ import com.user_auth.user_auth.dto.AuthRequestBody;
 import com.user_auth.user_auth.dto.AuthResponseBody;
 import com.user_auth.user_auth.model.AuthUser;
 import com.user_auth.user_auth.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,7 +23,7 @@ public class AuthController{
     }
 
     @PostMapping("/register")
-    public AuthResponseBody registerUser(@RequestBody AuthRequestBody authRequestBody){
+    public AuthResponseBody registerUser(@Valid @RequestBody AuthRequestBody authRequestBody){
         return authService.registerUser(authRequestBody);
     }
 
