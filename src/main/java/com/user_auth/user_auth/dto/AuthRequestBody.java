@@ -1,25 +1,12 @@
-package com.user_auth.user_auth.model;
+package com.user_auth.user_auth.dto;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
-@Entity(name = "users")
-public class AuthUser {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+public class AuthRequestBody {
     private String email;
     private String password;
 
-    public AuthUser(String email, String password){
+    public AuthRequestBody(String email, String password) {
         this.email = email;
         this.password = password;
-    }
-
-    public AuthUser(){
-
     }
 
     public String getEmail() {

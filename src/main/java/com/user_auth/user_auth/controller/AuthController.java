@@ -1,10 +1,10 @@
 package com.user_auth.user_auth.controller;
 
+import com.user_auth.user_auth.dto.AuthRequestBody;
+import com.user_auth.user_auth.dto.AuthResponseBody;
 import com.user_auth.user_auth.model.AuthUser;
 import com.user_auth.user_auth.service.AuthService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/authentication")
@@ -19,6 +19,11 @@ public class AuthController{
     @GetMapping("/user")
     public AuthUser getUser(){
         return authService.getUser("test@gmail.com");
+    }
+
+    @PostMapping("/register")
+    public AuthResponseBody registerUser(@RequestBody AuthRequestBody authRequestBody){
+        return authService.registerUser(authRequestBody);
     }
 
 }
