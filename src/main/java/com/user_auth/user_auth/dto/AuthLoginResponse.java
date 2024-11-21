@@ -1,10 +1,10 @@
 package com.user_auth.user_auth.dto;
 
-public class AuthResponseBody {
+public class AuthLoginResponse {
     private final String token;
     private final String message;
 
-    public AuthResponseBody(String token, String message) {
+    public AuthLoginResponse(String token, String message) {
         this.token = token;
         this.message = message;
     }

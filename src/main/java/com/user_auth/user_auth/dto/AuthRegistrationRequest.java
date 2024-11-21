@@ -4,7 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public class AuthRequestBody {
+public class AuthRegistrationRequest {
     @Email(message = "Please enter a valid email address.")
     @NotBlank(message = "Email is mandatory")
     private String email;
@@ -12,7 +12,7 @@ public class AuthRequestBody {
     @Size(min = 8, max = 20, message = "Password must be between 8 and 20 characters")
     private String password;
 
-    public AuthRequestBody(String email, String password) {
+    public AuthRegistrationRequest(String email, String password) {
         this.email = email;
         this.password = password;
     }

@@ -1,7 +1,9 @@
 package com.user_auth.user_auth.controller;
 
-import com.user_auth.user_auth.dto.AuthRequestBody;
-import com.user_auth.user_auth.dto.AuthResponseBody;
+import com.user_auth.user_auth.dto.AuthLoginRequest;
+import com.user_auth.user_auth.dto.AuthLoginResponse;
+import com.user_auth.user_auth.dto.AuthRegistrationRequest;
+import com.user_auth.user_auth.dto.AuthRegistrationResponse;
 import com.user_auth.user_auth.model.AuthUser;
 import com.user_auth.user_auth.service.AuthService;
 import jakarta.validation.Valid;
@@ -23,8 +25,13 @@ public class AuthController{
     }
 
     @PostMapping("/register")
-    public AuthResponseBody registerUser(@Valid @RequestBody AuthRequestBody authRequestBody){
-        return authService.registerUser(authRequestBody);
+    public AuthRegistrationResponse registerUser(@Valid @RequestBody AuthRegistrationRequest authRegistrationRequest){
+        return authService.registerUser(authRegistrationRequest);
+    }
+
+    @PostMapping("/login")
+    public AuthLoginResponse registerUser(@Valid @RequestBody AuthLoginRequest authLoginRequest){
+        return authService.loginUser(authLoginRequest);
     }
 
 }
