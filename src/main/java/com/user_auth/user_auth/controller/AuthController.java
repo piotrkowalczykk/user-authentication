@@ -20,8 +20,8 @@ public class AuthController{
     }
 
     @GetMapping("/user")
-    public AuthUser getUser(){
-        return authService.getUser("piotr@gmail.com");
+    public AuthUser getUser(@RequestAttribute("authenticatedUser") AuthUser authUser){
+        return authService.getUser(authUser.getEmail());
     }
 
     @PostMapping("/register")

@@ -33,7 +33,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthRegistrationResponse registerUser(AuthRegistrationRequest authRegistrationRequest) {
         authUserRepository.save(new AuthUser(authRegistrationRequest.getEmail(), encoder.encode(authRegistrationRequest.getPassword())));
-        return new AuthRegistrationResponse("token", "User registered successfully");
+        String token = jwt.generateToken(authRegistrationRequest.getEmail());
+        return new AuthRegistrationResponse(token, "User registered successfully");
     }
 
     @Override
