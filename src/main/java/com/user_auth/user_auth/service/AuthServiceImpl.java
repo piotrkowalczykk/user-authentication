@@ -6,10 +6,13 @@ import com.user_auth.user_auth.dto.AuthRegistrationRequest;
 import com.user_auth.user_auth.dto.AuthRegistrationResponse;
 import com.user_auth.user_auth.model.AuthUser;
 import com.user_auth.user_auth.repository.AuthUserRepository;
+import com.user_auth.user_auth.utils.EmailService;
 import com.user_auth.user_auth.utils.Encoder;
 import com.user_auth.user_auth.utils.JsonWebToken;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.io.UnsupportedEncodingException;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -17,12 +20,14 @@ public class AuthServiceImpl implements AuthService {
     private final AuthUserRepository authUserRepository;
     private final Encoder encoder;
     private final JsonWebToken jwt;
+    private final EmailService emailService;
 
     @Autowired
-    AuthServiceImpl(AuthUserRepository authUserRepository, Encoder encoder, JsonWebToken jwt){
+    AuthServiceImpl(AuthUserRepository authUserRepository, Encoder encoder, JsonWebToken jwt, EmailService emailService){
         this.authUserRepository = authUserRepository;
         this.encoder = encoder;
         this.jwt = jwt;
+        this.emailService = emailService;
     }
 
     @Override
@@ -31,9 +36,10 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthRegistrationResponse registerUser(AuthRegistrationRequest authRegistrationRequest) {
+    public AuthRegistrationResponse registerUser(AuthRegistrationRequest authRegistrationRequest) throws MessagingException, UnsupportedEncodingException {
         authUserRepository.save(new AuthUser(authRegistrationRequest.getEmail(), encoder.encode(authRegistrationRequest.getPassword())));
         String token = jwt.generateToken(authRegistrationRequest.getEmail());
+        emailService.sendEmail(authRegistrationRequest.getEmail(), "New account", "Hello!");
         return new AuthRegistrationResponse(token, "User registered successfully");
     }
 

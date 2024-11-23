@@ -6,8 +6,11 @@ import com.user_auth.user_auth.dto.AuthRegistrationRequest;
 import com.user_auth.user_auth.dto.AuthRegistrationResponse;
 import com.user_auth.user_auth.model.AuthUser;
 import com.user_auth.user_auth.service.AuthService;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.UnsupportedEncodingException;
 
 @RestController
 @RequestMapping("/api/v1/authentication")
@@ -25,7 +28,7 @@ public class AuthController{
     }
 
     @PostMapping("/register")
-    public AuthRegistrationResponse registerUser(@Valid @RequestBody AuthRegistrationRequest authRegistrationRequest){
+    public AuthRegistrationResponse registerUser(@Valid @RequestBody AuthRegistrationRequest authRegistrationRequest) throws MessagingException, UnsupportedEncodingException {
         return authService.registerUser(authRegistrationRequest);
     }
 

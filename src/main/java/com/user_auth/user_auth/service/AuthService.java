@@ -5,10 +5,13 @@ import com.user_auth.user_auth.dto.AuthLoginResponse;
 import com.user_auth.user_auth.dto.AuthRegistrationRequest;
 import com.user_auth.user_auth.dto.AuthRegistrationResponse;
 import com.user_auth.user_auth.model.AuthUser;
+import jakarta.mail.MessagingException;
+
+import java.io.UnsupportedEncodingException;
 
 public interface AuthService {
 
     public AuthUser getUser(String email);
-    public AuthRegistrationResponse registerUser(AuthRegistrationRequest authRegistrationRequest);
+    public AuthRegistrationResponse registerUser(AuthRegistrationRequest authRegistrationRequest) throws MessagingException, UnsupportedEncodingException;
     public AuthLoginResponse loginUser(AuthLoginRequest authLoginRequest);
 }
