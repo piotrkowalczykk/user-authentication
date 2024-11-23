@@ -21,7 +21,7 @@ public class AuthController{
 
     @GetMapping("/user")
     public AuthUser getUser(){
-        return authService.getUser("test@gmail.com");
+        return authService.getUser("piotr@gmail.com");
     }
 
     @PostMapping("/register")
