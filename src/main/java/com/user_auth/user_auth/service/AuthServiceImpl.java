@@ -10,9 +10,15 @@ import com.user_auth.user_auth.utils.EmailService;
 import com.user_auth.user_auth.utils.Encoder;
 import com.user_auth.user_auth.utils.JsonWebToken;
 import jakarta.mail.MessagingException;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.io.UnsupportedEncodingException;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.Random;
+import java.util.logging.Logger;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -21,6 +27,7 @@ public class AuthServiceImpl implements AuthService {
     private final Encoder encoder;
     private final JsonWebToken jwt;
     private final EmailService emailService;
+    private final int durationInMinutes = 1;
 
     @Autowired
     AuthServiceImpl(AuthUserRepository authUserRepository, Encoder encoder, JsonWebToken jwt, EmailService emailService){
@@ -37,10 +44,42 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthRegistrationResponse registerUser(AuthRegistrationRequest authRegistrationRequest) throws MessagingException, UnsupportedEncodingException {
-        authUserRepository.save(new AuthUser(authRegistrationRequest.getEmail(), encoder.encode(authRegistrationRequest.getPassword())));
+        String emailVerificationToken = generateEmailVerificationToken();
+        String hashedToken = encoder.encode(emailVerificationToken);
+
+        AuthUser user = new AuthUser();
+        user.setEmail(authRegistrationRequest.getEmail());
+        user.setPassword(encoder.encode(authRegistrationRequest.getPassword()));
+        user.setEmailVerificationToken(hashedToken);
+        user.setEmailVerificationTokenExpiryDate(LocalDateTime.now().plusMinutes(durationInMinutes));
+        authUserRepository.save(user);
+
+        String subject = "Email Verification";
+        String content = String.format("Enter this code to verify your email: %s. The code will expire in %s minutes.", emailVerificationToken, durationInMinutes);
+
+        try{
+            emailService.sendEmail(authRegistrationRequest.getEmail(), subject, content);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         String token = jwt.generateToken(authRegistrationRequest.getEmail());
-        emailService.sendEmail(authRegistrationRequest.getEmail(), "New account", "Hello!");
         return new AuthRegistrationResponse(token, "User registered successfully");
+    }
+
+    @Override
+    public void validateEmailVerificationToken(String emailToken, String email){
+        Optional<AuthUser> user = authUserRepository.findByEmail(email);
+        if(user.isPresent() && encoder.matches(emailToken, user.get().getEmailVerificationToken()) && !user.get().getEmailVerificationTokenExpiryDate().isBefore(LocalDateTime.now())){
+            user.get().setEmailVerified(true);
+            user.get().setEmailVerificationToken(null);
+            user.get().setEmailVerificationTokenExpiryDate(null);
+            authUserRepository.save(user.get());
+        } else if(user.isPresent() && encoder.matches(emailToken, user.get().getEmailVerificationToken()) && !user.get().getEmailVerificationTokenExpiryDate().isBefore(LocalDateTime.now())){
+            throw new IllegalArgumentException("Email verification token expired.");
+        } else {
+            throw new IllegalArgumentException("Email verification token failed.");
+        }
     }
 
     @Override
@@ -51,5 +90,15 @@ public class AuthServiceImpl implements AuthService {
         }
         String token = jwt.generateToken(authLoginRequest.getEmail());
         return new AuthLoginResponse(token, "Successfully logged in");
+    }
+
+    @Override
+    public String generateEmailVerificationToken() {
+        SecureRandom random = new SecureRandom();
+        StringBuilder code = new StringBuilder();
+        for (int i = 0; i < 5; i++){
+            code.append(random.nextInt(10));
+        }
+        return code.toString();
     }
 }

@@ -24,7 +24,7 @@ public class AuthController{
 
     @GetMapping("/user")
     public AuthUser getUser(@RequestAttribute("authenticatedUser") AuthUser authUser){
-        return authService.getUser(authUser.getEmail());
+        return authUser;
     }
 
     @PostMapping("/register")
@@ -35,6 +35,12 @@ public class AuthController{
     @PostMapping("/login")
     public AuthLoginResponse registerUser(@Valid @RequestBody AuthLoginRequest authLoginRequest){
         return authService.loginUser(authLoginRequest);
+    }
+
+    @PutMapping("/validate-email")
+    public String validateEmail(@RequestParam String emailToken, @RequestAttribute("authenticatedUser") AuthUser authUser){
+        authService.validateEmailVerificationToken(emailToken, authUser.getEmail());
+        return "Email verified successfully.";
     }
 
 }

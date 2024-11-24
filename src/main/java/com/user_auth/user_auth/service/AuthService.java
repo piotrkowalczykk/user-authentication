@@ -14,4 +14,7 @@ public interface AuthService {
     public AuthUser getUser(String email);
     public AuthRegistrationResponse registerUser(AuthRegistrationRequest authRegistrationRequest) throws MessagingException, UnsupportedEncodingException;
     public AuthLoginResponse loginUser(AuthLoginRequest authLoginRequest);
+    public String generateEmailVerificationToken();
+    public void validateEmailVerificationToken(String emailToken, String email);
+
 }
