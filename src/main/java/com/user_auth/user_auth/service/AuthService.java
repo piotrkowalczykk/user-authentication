@@ -16,5 +16,5 @@ public interface AuthService {
     public AuthLoginResponse loginUser(AuthLoginRequest authLoginRequest);
     public String generateEmailVerificationToken();
     public void validateEmailVerificationToken(String emailToken, String email);
-
+    public void sendEmailVerificationToken(String email);
 }

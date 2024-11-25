@@ -10,15 +10,12 @@ import com.user_auth.user_auth.utils.EmailService;
 import com.user_auth.user_auth.utils.Encoder;
 import com.user_auth.user_auth.utils.JsonWebToken;
 import jakarta.mail.MessagingException;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.Random;
-import java.util.logging.Logger;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -79,6 +76,30 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalArgumentException("Email verification token expired.");
         } else {
             throw new IllegalArgumentException("Email verification token failed.");
+        }
+    }
+
+    @Override
+    public void sendEmailVerificationToken(String email){
+        Optional<AuthUser> user = authUserRepository.findByEmail(email);
+        if(user.isPresent() && !user.get().getEmailVerified()){
+            String emailVerificationToken = generateEmailVerificationToken();
+            String hashedToken = encoder.encode(emailVerificationToken);
+
+            user.get().setEmailVerificationToken(hashedToken);
+            user.get().setEmailVerificationTokenExpiryDate(LocalDateTime.now().plusMinutes(durationInMinutes));
+            authUserRepository.save(user.get());
+
+            String subject = "Email Verification";
+            String content = String.format("Enter this code to verify your email: %s. The code will expire in %s minutes.", emailVerificationToken, durationInMinutes);
+
+            try{
+                emailService.sendEmail(email, subject, content);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            throw new IllegalArgumentException("Email verification token failed, or email is already verified");
         }
     }
 

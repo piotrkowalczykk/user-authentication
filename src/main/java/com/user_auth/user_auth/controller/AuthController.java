@@ -43,4 +43,10 @@ public class AuthController{
         return "Email verified successfully.";
     }
 
+    @GetMapping("/send-email-verification-token")
+    public String sendEmailVerificationToken(@RequestAttribute("authenticatedUser") AuthUser authUser){
+        authService.sendEmailVerificationToken(authUser.getEmail());
+        return "Email verification token sent successfully.";
+    }
+
 }
