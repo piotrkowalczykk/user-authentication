@@ -104,6 +104,31 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public void sendPasswordResetToken(String email){
+        Optional<AuthUser> user = authUserRepository.findByEmail(email);
+
+        if(user.isPresent()) {
+            String passwordResetToken = generateEmailVerificationToken();
+            String hashedToken = encoder.encode(generateEmailVerificationToken());
+
+            user.get().setPasswordResetToken(hashedToken);
+            user.get().setPasswordResetTokenExpiryDate(LocalDateTime.now().plusMinutes(durationInMinutes));
+            authUserRepository.save(user.get());
+
+            String subject = "Password Reset";
+            String content = String.format("You requested a password reset. Enter this code to reset your password: %s. The code will expire in %s minutes.", passwordResetToken, durationInMinutes);
+
+            try{
+                emailService.sendEmail(email, subject, content);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+        } else {
+            throw new IllegalArgumentException("User not found");
+        }
+    }
+
+    @Override
     public AuthLoginResponse loginUser(AuthLoginRequest authLoginRequest){
         AuthUser user = authUserRepository.findByEmail(authLoginRequest.getEmail()).orElseThrow(()-> new IllegalArgumentException("User not found"));
         if(!encoder.matches(authLoginRequest.getPassword(), user.getPassword())){
