@@ -55,4 +55,10 @@ public class AuthController{
         return "Password reset token sent successfully";
     }
 
+    @PutMapping("/reset-password")
+    public String resetPassword(@RequestParam String email, @RequestParam String newPassword, @RequestParam String token){
+        authService.resetPassword(email, newPassword, token);
+        return "Password reset successfully";
+    }
+
 }

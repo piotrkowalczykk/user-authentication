@@ -18,6 +18,7 @@ public interface AuthService {
     public void validateEmailVerificationToken(String emailToken, String email);
     public void sendEmailVerificationToken(String email);
     public void sendPasswordResetToken(String email);
+    public void resetPassword(String email, String newPassword, String token);
 
 
 }
